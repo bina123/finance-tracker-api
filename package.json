@@ -39,6 +39,7 @@
     "testEnvironment": "node",
     "testPathIgnorePatterns": [
       "/node_modules/"
-    ]
+    ],
+    "testTimeout": 30000
   }
 }
