@@ -26,7 +26,8 @@ describe('POST /api/v1/auth/register', () => {
         expect(res.status).toBe(201);
         expect(res.body.message).toBe('Registration successful');
         expect(res.body.data.user.email).toBe('testauth1@test.com');
-        expect(res.body.data.token).toBeDefined();
+        expect(res.body.data.accessToken).toBeDefined();
+        expect(res.body.data.refreshToken).toBeDefined();
         // Password should never be returned
         expect(res.body.data.user.password).toBeUndefined();
     });
@@ -108,7 +109,8 @@ describe('POST /api/v1/auth/login', () => {
 
         expect(res.status).toBe(200);
         expect(res.body.message).toBe('Login successful');
-        expect(res.body.data.token).toBeDefined();
+        expect(res.body.data.accessToken).toBeDefined();
+        expect(res.body.data.refreshToken).toBeDefined();
         expect(res.body.data.user.password).toBeUndefined();
     });
 
@@ -147,7 +149,7 @@ describe('GET /api/v1/auth/me', () => {
                 email: 'testauthme@test.com',
                 password: 'password123'
             });
-        token = res.body.data.token;
+        token = res.body.data.accessToken;
     });
 
     it('should return current user with valid token', async () => {

@@ -16,7 +16,7 @@ beforeAll(async () => {
             password: 'password123'
         });
 
-    token = res.body.data.token;
+    token = res.body.data.accessToken;
     userId = res.body.data.user.id;
 
     // Create test category
