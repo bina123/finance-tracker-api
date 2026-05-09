@@ -15,9 +15,11 @@ model User {
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 
-  transactions Transaction[]
-  budgets      Budget[]
-  auditLogs    AuditLog[]
+  transactions        Transaction[]
+  budgets             Budget[]
+  auditLogs           AuditLog[]
+  refreshTokens       RefreshToken[]
+  passwordResetTokens PasswordResetToken[]
 }
 
 model Category {
@@ -88,6 +90,33 @@ model AuditLog {
 
   user          User      @relation(fields: [userId], references: [id])
   transaction   Transaction? @relation(fields: [entityId], references: [id])
+}
+
+model RefreshToken {
+  id            String @id @default(uuid())
+  userId        String
+  tokenHash     String @unique
+  expiresAt     DateTime
+  revokedAt     DateTime?
+  createdAt     DateTime @default(now())
+
+  user          User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model PasswordResetToken {
+  id            String @id @default(uuid())
+  userId        String
+  tokenHash     String @unique
+  expiresAt     DateTime
+  consumedAt    DateTime?
+  createdAt     DateTime @default(now())
+
+  user          User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 enum TransactionType {

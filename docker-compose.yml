@@ -20,6 +20,21 @@ services:
       timeout: 5s
       retries: 5
 
+  # Redis — for BullMQ background jobs and caching
+  redis:
+    image: redis:7-alpine
+    container_name: finance_tracker_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
   # Node.js application
   app:
     build:
@@ -32,9 +47,19 @@ services:
       - "3000:3000"
     environment:
       DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
+      ACCESS_TOKEN_EXPIRES_IN: 15m # ← ADD
+      REFRESH_TOKEN_EXPIRES_DAYS: 30
+      NODE_ENV: ${NODE_ENV:-production}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
     depends_on:
       db:
+        condition: service_healthy
+      redis:
         condition: service_healthy
 
 volumes:
   postgres_data:
+  redis_data:

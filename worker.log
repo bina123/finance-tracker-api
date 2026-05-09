@@ -1,0 +1,13 @@
+
+> finance-tracker-api@1.0.0 worker:dev
+> nodemon src/workers/index.js
+
+[33m[nodemon] 3.1.14[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching path(s): *.*[39m
+[33m[nodemon] watching extensions: js,mjs,cjs,json[39m
+[32m[nodemon] starting `node src/workers/index.js`[39m
+◇ injected env (12) from .env // tip: ⌘ custom filepath { path: '/custom/path/.env' }
+{"level":30,"time":"2026-05-09T11:21:08.415Z","service":"finance-tracker-api","env":"development","env":"development","msg":"Starting workers.."}
+{"level":30,"time":"2026-05-09T11:21:08.491Z","service":"finance-tracker-api","env":"development","msg":"All workers started, waiting for jobs"}
+{"level":30,"time":"2026-05-09T11:21:08.500Z","service":"finance-tracker-api","env":"development","msg":"Redis connected to BullMq"}

@@ -1,3 +1,4 @@
+const { join } = require('@prisma/client/runtime/client');
 const Joi = require('joi');
 
 const registerSchema = Joi.object({
@@ -11,4 +12,12 @@ const loginSchema = Joi.object({
     password: Joi.string().required()
 });
 
-module.exports = { registerSchema, loginSchema };
+const refreshSchema = Joi.object({
+    refreshToken: Joi.string().required()
+})
+
+const logoutSchema = Joi.object({
+    refreshToken: Joi.string().required()
+})
+
+module.exports = { registerSchema, loginSchema, refreshSchema, logoutSchema };

@@ -1,4 +1,5 @@
 const prisma = require('../../config/prisma');
+const { notificationsQueue } = require('../../queues');
 
 // Helper — create double entry ledger entries
 const createLedgerEntries = async (
@@ -137,6 +138,18 @@ const create = async (userId, data) => {
 
         return transaction;
     });
+
+    try{
+        await notificationsQueue.add('transaction-created',{
+            userId,
+            transactionId: result.id,
+            type: result.type,
+            amount: result.amount.toString(),
+            currency: result.currency
+        });
+    }catch (err) {
+        require('../../shared/logger').error({err: err.message, transactionId: result.id},'Failed to enqueue notification job');
+    }
 
     return {
         transaction: result,

@@ -24,6 +24,40 @@ const login = async (req, res) => {
     }
 };
 
+const refresh = async (req, res) => {
+    try {
+        const {refreshToken} = req.body;
+        const result = await authService.refresh(refreshToken);
+        res.status(200).json({
+            message: 'Token Refreshed',
+            data: result
+        })
+    }catch (error) {
+        res.status(401).json({error: error.message});
+    }
+};
+
+const logout = async (req, res) => {
+    try {
+        const {refreshToken} = req.body;
+        await authService.logout(refreshToken);
+
+        res.status(200).json({
+            message:'Logout successfully'
+        })
+    }catch(error) {
+        res.status(401).json({error: error.message})
+    }
+}
+
+const logoutAll = async( req, res) => {
+    try{
+        await authService.logoutAll(req.user.userId);
+        res.status(200).json({message: "Logged out from all sessions"});
+    }catch (error) {
+        res.status(401).json({error: error.message});
+    }
+}
 const getMe = async (req, res) => {
     try {
         const user = await authService.getMe(req.user.userId);
@@ -33,4 +67,4 @@ const getMe = async (req, res) => {
     }
 };
 
-module.exports = { register, login, getMe };
+module.exports = { register, login, refresh, logout, logoutAll, getMe };

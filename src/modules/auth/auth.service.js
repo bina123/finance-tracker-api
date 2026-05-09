@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const prisma = require('../../config/prisma');
+const tokenService = require('./token.service');
 
 const register = async ({ name, email, password }) => {
     // Check if user already exists
@@ -21,14 +21,11 @@ const register = async ({ name, email, password }) => {
         select: { id: true, name: true, email: true, createdAt: true }
     });
 
-    // Generate token
-    const token = jwt.sign(
-        { userId: user.id, email: user.email },
-        process.env.JWT_SECRET,
-        { expiresIn: process.env.JWT_EXPIRES_IN }
-    );
+    // Issue access + refresh token pair
+    const accessToken = tokenService.generateAccessToken(user);
+    const refreshToken = await tokenService.generateRefreshToken(user.id);
 
-    return { user, token };
+    return { user, accessToken, refreshToken };
 };
 
 const login = async ({ email, password }) => {
@@ -49,11 +46,8 @@ const login = async ({ email, password }) => {
     }
 
     // Generate token
-    const token = jwt.sign(
-        { userId: user.id, email: user.email },
-        process.env.JWT_SECRET,
-        { expiresIn: process.env.JWT_EXPIRES_IN }
-    );
+    const accessToken = tokenService.generateAccessToken(user);
+    const refreshToken = await tokenService.generateRefreshToken(user.id);
 
     return {
         user: {
@@ -62,9 +56,22 @@ const login = async ({ email, password }) => {
             email: user.email,
             createdAt: user.createdAt
         },
-        token
+        accessToken,
+        refreshToken
     };
 };
+
+const refresh = async(rawRefreshToken) => {
+    return await tokenService.rotateRefreshToken(rawRefreshToken);
+}
+
+const logout = async(rawRefreshToken) => {
+    return await tokenService.revokeRefreshToken(rawRefreshToken);
+}
+
+const logoutAll = async(userId) => {
+    return await tokenService.revokeAllRefreshToken(userId);
+}
 
 const getMe = async (userId) => {
     const user = await prisma.user.findUnique({
@@ -79,4 +86,4 @@ const getMe = async (userId) => {
     return user;
 };
 
-module.exports = { register, login, getMe };
+module.exports = { register, login,refresh, logout, logoutAll ,getMe };

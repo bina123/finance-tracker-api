@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('./auth.controller');
-const { registerSchema, loginSchema } = require('./auth.validator');
+const { registerSchema, loginSchema, refreshSchema, logoutSchema } = require('./auth.validator');
 const authenticate = require('../../middleware/auth.middleware');
 
 // Validation middleware
@@ -17,6 +17,9 @@ const validate = (schema) => (req, res, next) => {
 
 router.post('/register', validate(registerSchema), authController.register);
 router.post('/login', validate(loginSchema), authController.login);
+router.post('/refresh', validate(refreshSchema),authController.refresh);
+router.post('/logout',validate(logoutSchema),authController.logout);
+router.post('/logout-all',authenticate, authController.logoutAll);
 router.get('/me', authenticate, authController.getMe);
 
 module.exports = router;
